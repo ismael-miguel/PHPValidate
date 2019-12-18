@@ -277,7 +277,73 @@ REGEX;
 			after - $value must be after
 		*/
 		
-		return false;
+		static $parts = array(
+			// day
+			'd' => '3[01]|[12]\d|0[1-9]',
+			'D' => 'Mon|Tue|Wed|Thu|Fri|Sat|Sun',
+			'j' => '3[01]|[12]\d|[1-9]',
+			'l' => '(?:Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day',
+			'N' => '[1-7]',
+			'S' => 'st|[nr]d|th',
+			'w' => '[0-6]',
+			'z' => '3(?:[0-5]\d|6[0-5])|[12]\d{2}|[1-9]?\d',
+			
+			// week
+			'W' => '5[0-3]|[1-4]\d|[1-9]',
+			
+			// month
+			'F' => 'January|February|March|April|May|Ju(?:ne|ly)|August|(?:Septem|Octo|Novem|Decem)ber',
+			'm' => '1[012]|0[1-9]',
+			'M' => 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec',
+			'n' => '1[012]|[1-9]',
+			't' => '2[89]|3[01]',
+			
+			// year
+			'L' => '[01]',
+			'o' => '\d{4}',
+			'Y' => '\d{4}',
+			'Y' => '\d{2}',
+			
+			// time
+			'a' => '[ap]m',
+			'A' => '[AP]M',
+			'B' => '\d{3}',
+			'g' => '1[012]|[1-9]',
+			'G' => '2[0-3]|1\d|[1-9]',
+			'h' => '1[012]|0[1-9]',
+			'H' => '2[0-3]|1\d|0[1-9]',
+			'i' => '[0-5]\d',
+			's' => '[0-5]\d',
+			'u' => '\d{6}',
+			'v' => '\d{3}',
+			
+			// timezone
+			'e' => '\p{Titlecase_Letter}(?:[\p{Titlecase_Letter}]{2}|[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+\/\p{Titlecase_Letter}[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+)',
+			'I' => '[01]',
+			'O' => '[\+\-](?:2[0-3]|1\d|0[1-9])(?:[0-5]\d)',
+			'P' => '[\+\-](?:2[0-3]|1\d|0[1-9]):(?:[0-5]\d)',
+			'T' => '[\p{Titlecase_Letter}]{3}',
+			'Z' => '-43200|-43[01]\d{2}|-4[012]\d{3}|-[1-3]\d{4}|-?[1-9]\d{0,3}|-?0|[1-4]\d{4}|50[0-3]\d{2}|50400',
+			
+			// full date/time
+			// Y-m-d\TH:i:sP
+			'c' => '(?:\d{4})-(?:1[012]|0[1-9])-(?:3[01]|[12]\d|0[1-9])T(?:2[0-3]|1\d|0[1-9]):(?:[0-5]\d):(?:[0-5]\d)(?:[\+\-](?:2[0-3]|1\d|0[1-9]):(?:[0-5]\d))', // 2004-02-12T15:19:21+00:00
+			// D, j M Y H:i:s O
+			'r' => '(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), (?:3[01]|[12]\d|[1-9]) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (?:\d{4}) (?:2[0-3]|1\d|0[1-9]):(?:[0-5]\d):(?:[0-5]\d) (?:[\+\-](?:2[0-3]|1\d|0[1-9])(?:[0-5]\d))', // Thu, 21 Dec 2000 16:01:07 +0200
+			'U' => '-?(?:\d|[1-9]\d*)'
+		);
+		
+		if(!isset($args['format']))
+		{
+			// 2005-08-15T15:52:01+00:00 - DATE_ATOM
+			$args['format'] = 'Y-m-d\TH:i:s';
+		}
+		
+		$regex = preg_replace_callback('@(?<!\\\\)[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU]@', function($letter)use(&$parts){
+			return '(?:' . $parts[$letter] . ')';
+		}, preg_quote($args['format'], '@'));
+		
+		return !!preg_match('@^' . $regex . '$@', $value);
 	}
 	
 	// *******************************************************************************
