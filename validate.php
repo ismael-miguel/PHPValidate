@@ -302,7 +302,7 @@ REGEX;
 			'L' => '[01]',
 			'o' => '\d{4}',
 			'Y' => '\d{4}',
-			'Y' => '\d{2}',
+			'y' => '\d{2}',
 			
 			// time
 			'a' => '[ap]m',
@@ -318,11 +318,13 @@ REGEX;
 			'v' => '\d{3}',
 			
 			// timezone
-			'e' => '\p{Titlecase_Letter}(?:[\p{Titlecase_Letter}]{2}|[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+\/\p{Titlecase_Letter}[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+)',
+			// 'e' => '\p{Titlecase_Letter}(?:[\p{Titlecase_Letter}]{2}|[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+\/\p{Titlecase_Letter}[\p{Lowercase_Letter}\p{Other_Letter}\p{Modifier_Letter}]+)',
+			'e' => '\p{Lu}(?:[\p{L}]+\/\p{Lu}[\p{L}]+|[\p{Lu}]+)?',
 			'I' => '[01]',
 			'O' => '[\+\-](?:2[0-3]|1\d|0[1-9])(?:[0-5]\d)',
 			'P' => '[\+\-](?:2[0-3]|1\d|0[1-9]):(?:[0-5]\d)',
-			'T' => '[\p{Titlecase_Letter}]{3}',
+			// 'T' => '[\p{Titlecase_Letter}]{3}',
+			'T' => '\p{Lu}{3}',
 			'Z' => '-43200|-43[01]\d{2}|-4[012]\d{3}|-[1-3]\d{4}|-?[1-9]\d{0,3}|-?0|[1-4]\d{4}|50[0-3]\d{2}|50400',
 			
 			// full date/time
@@ -336,11 +338,11 @@ REGEX;
 		if(!isset($args['format']))
 		{
 			// 2005-08-15T15:52:01+00:00 - DATE_ATOM
-			$args['format'] = 'Y-m-d\TH:i:s';
+			$args['format'] = 'Y-m-d\TH:i:sP';
 		}
 		
-		$regex = preg_replace_callback('@(?<!\\\\)[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU]@', function($letter)use(&$parts){
-			return '(?:' . $parts[$letter] . ')';
+		$regex = preg_replace_callback('@(\\\\+)?[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU]@', function($letter)use(&$parts){
+			return $letter[1] ? preg_quote($letter[2], '@') : '(?:' . $parts[$letter[2]] . ')';
 		}, preg_quote($args['format'], '@'));
 		
 		return !!preg_match('@^' . $regex . '$@', $value);
