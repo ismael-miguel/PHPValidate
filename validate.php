@@ -62,7 +62,7 @@ final class ValidateBaseRules {
 		$length = mb_strlen(
 			$value,
 			isset($args['encoding']) && $args['encoding']
-				? $args['max_length']
+				? $args['encoding']
 				: mb_internal_encoding()
 		);
 		
