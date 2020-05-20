@@ -118,47 +118,35 @@ final class ValidateBaseRules {
 		
 		if(isset($args['has']))
 		{
-			if(!is_array($args['has']))
+			if(is_array($args['has']))
+			{
+				$has = false;
+				foreach($args['has'] as $key)
+				{
+					if(!$has && isset($value[$key]))
+					{
+						$has = true;
+						break;
+					}
+				}
+				
+				if(!$has)
+				{
+					return false;
+				}
+				unset($has);
+			}
+			else if(is_string($args['has']) || is_integer($args['has']))
+			{
+				if(!isset($value[$args['has']]))
+				{
+					return false;
+				}
+			}
+			else
 			{
 				return null;
 			}
-			
-			$has = false;
-			foreach($args['has'] as $key)
-			{
-				if(!$has && isset($value[$key]))
-				{
-					$has = true;
-				}
-			}
-			
-			if(!$has)
-			{
-				return false;
-			}
-		}
-		
-		if(isset($args['has']))
-		{
-			if(!is_array($args['has']))
-			{
-				return null;
-			}
-			
-			$has = false;
-			foreach($args['has'] as $key)
-			{
-				if(!$has && isset($value[$key]))
-				{
-					$has = true;
-				}
-			}
-			
-			if(!$has)
-			{
-				return false;
-			}
-			unset($has);
 		}
 		
 		$count = count($value);
