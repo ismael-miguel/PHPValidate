@@ -71,3 +71,31 @@ The `$rules` are always an array and can have the following structure:
 	 - `min_length` - Minimum length for the string (relies on `mb_strlen()`)
 	 - `length` - Exact length of the string (relies on `mb_strlen()`)
 	 - `matches` - Matches against the specified regular expression (relies on `preg_match()`)
+ 
+ - `array`
+ 	Verifies that the value is an array.  
+	Arguments:
+	 - `has` - Verifies if the array has the specific key or keys (can be a simple string, number or an array of keys)
+	 - `empty` - When set to `true`, verifies if the array is empty
+	 - `max_count` - Maximum number of elements in the array
+	 - `min_count` - Minimum number of elements in the array
+	 - `count` - Exactly this many elements in the array
+	 
+ - `in`
+ 	Verifies if the given value exists in the array
+	
+ - `required`
+ 	Verifies if the value exists (`null` values will fail this verification)
+	
+ - `optional`
+ 	Always returns `true`
+	
+ - `ip`
+ 	Verifies that the value is a valid IPv4 address.  
+	Arguments:
+	 - `ipv6` - Tries to verify as an IPv6 address
+	 
+ - `date`
+ 	Verifies if it is a valid date.  
+	Arguments:
+	 - `format` - **This argument is required**. Takes a format used by the `date()` function. (Default: `'Y-m-d\TH:i:sP'` - DATE_ATOM)
